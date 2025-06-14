@@ -33,7 +33,7 @@ type MergeTodoTaskSchedConf struct {
 }
 
 func NewMergeTodoTaskSched(cfg *MergeTodoTaskSchedConf) (*MergeTodoTaskSched, error) {
-	redisPool = cfg.RedisPool
+	ExecRedisCmd = execRedisCmd(cfg.RedisPool)
 
 	e, err := factory.NewAutoElection(factory.ElectDriverDistribMuRedis, factory.NewDistribMuRedisCfg(cfg.RedisPool, cfg.Name, uuid.NewV4().String()))
 	if err != nil {
