@@ -6,30 +6,32 @@ import (
 	"strconv"
 )
 
-var redisPool *redis.Pool
+type ExecRedisCmdFunc func(ttl int64, cmd, key string, args ...interface{}) (interface{}, error)
 
 // ExecRedisCmd 可以自定义redis执行函数覆盖默认的执行函数
-var ExecRedisCmd = func(ttl int64, cmd, key string, args ...interface{}) (interface{}, error) {
-	return execRedisCmd(ttl, cmd, key, args...)
+var ExecRedisCmd ExecRedisCmdFunc = func(ttl int64, cmd, key string, args ...interface{}) (interface{}, error) {
+	return nil, errors.New("ExecRedisCmd not yet implemented")
 }
 
-func execRedisCmd(ttl int64, cmd, key string, args ...interface{}) (interface{}, error) {
-	conn := redisPool.Get()
+func execRedisCmd(redisPool *redis.Pool) ExecRedisCmdFunc {
+	return func(ttl int64, cmd, key string, args ...interface{}) (interface{}, error) {
+		conn := redisPool.Get()
 
-	if err := conn.Err(); err != nil {
-		return 0, err
-	}
-
-	defer conn.Close()
-
-	reply, err := conn.Do(cmd, append([]interface{}{key}, args...)...)
-	if err == nil {
-		if ttl > 0 {
-			_, _ = conn.Do("EXPIRE", key, ttl)
+		if err := conn.Err(); err != nil {
+			return 0, err
 		}
-	}
 
-	return reply, err
+		defer conn.Close()
+
+		reply, err := conn.Do(cmd, append([]interface{}{key}, args...)...)
+		if err == nil {
+			if ttl > 0 {
+				_, _ = conn.Do("EXPIRE", key, ttl)
+			}
+		}
+
+		return reply, err
+	}
 }
 
 func execRedisSMembers(key string, args ...interface{}) ([]int64, error) {
