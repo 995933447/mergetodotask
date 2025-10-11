@@ -3,14 +3,14 @@ package mergetodotask
 
 import (
 	"fmt"
+	"sync"
+	"time"
+
 	"github.com/995933447/autoelectv2"
 	"github.com/995933447/autoelectv2/factory"
 	"github.com/995933447/bucketsched"
 	"github.com/995933447/runtimeutil"
-	"github.com/gomodule/redigo/redis"
 	uuid "github.com/satori/go.uuid"
-	"sync"
-	"time"
 )
 
 const (
@@ -28,7 +28,7 @@ type MergeTodoTaskSchedConf struct {
 	DecodeMergeTodoTaskFromString             func(string) (MergeTodoTask, error)
 	OnExecTask                                func(task MergeTodoTask) error
 	ReloadRedoLogIntervalSec                  uint32
-	RedisPool                                 *redis.Pool
+	RedisPool                                 RedisPool
 	OnErr                                     func(err error)
 }
 
