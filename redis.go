@@ -2,8 +2,9 @@ package mergetodotask
 
 import (
 	"errors"
-	"github.com/gomodule/redigo/redis"
 	"strconv"
+
+	"github.com/gomodule/redigo/redis"
 )
 
 type ExecRedisCmdFunc func(ttl int64, cmd, key string, args ...interface{}) (interface{}, error)
@@ -13,7 +14,12 @@ var ExecRedisCmd ExecRedisCmdFunc = func(ttl int64, cmd, key string, args ...int
 	return nil, errors.New("ExecRedisCmd not yet implemented")
 }
 
-func execRedisCmd(redisPool *redis.Pool) ExecRedisCmdFunc {
+type RedisPool interface {
+	Get() redis.Conn
+	Close() error
+}
+
+func execRedisCmd(redisPool RedisPool) ExecRedisCmdFunc {
 	return func(ttl int64, cmd, key string, args ...interface{}) (interface{}, error) {
 		conn := redisPool.Get()
 
