@@ -77,7 +77,7 @@ func GetRedisPool() *redis.Pool {
 		MaxConnLifetime: time.Minute * 10,
 		Wait:            true,
 		Dial: func() (redis.Conn, error) {
-			c, err := redis.Dial("tcp", "10.5.37.106:6379")
+			c, err := redis.Dial("tcp", "127.0.0.1:6379")
 			if err != nil {
 				return nil, err
 			}
